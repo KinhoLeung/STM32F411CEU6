@@ -1,0 +1,18 @@
+solution:
+  created-by: uv2csolution@1.6.0
+  created-for: CMSIS-Toolbox@2.7.0
+  compiler: AC6@6.23.0
+  target-types:
+    - type: STM32F411CEU6
+      device: STM32F411CEUx
+      optimize: debug
+      target-set:
+        - set:
+          images:
+            - project-context: STM32F411CEU6
+          debugger:
+            name: JLink Server
+            port: 3333
+            protocol: swd
+  projects:
+    - project: STM32F411CEU6.cproject.yml

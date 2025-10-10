@@ -1,0 +1,4 @@
+cbuild-set:
+  generated-by: vscode-cmsis-csolution version 1.60.0
+  contexts:
+    - context: STM32F411CEU6+STM32F411CEU6
