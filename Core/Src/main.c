@@ -24,12 +24,18 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include "rotary.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef enum {
+    ROTARY_MODE_INTERRUPT, //中断
+    ROTARY_MODE_TIMER, //定时器
+    ROTARY_MODE_POLLING, //轮询
+    ROTARY_MODE_COUNT //数量
+} Rotary_Mode;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -45,7 +51,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+volatile uint8_t key_press = 0;
+volatile uint8_t rotary_key_press = 0;
+volatile int32_t rotary_count = 0;
+Rotary_Mode rotary_mode = ROTARY_MODE_INTERRUPT;
+Rotary_HandleTypeDef hrotary;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,7 +66,12 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+bool read_rotary_a(void *data) {
+    return HAL_GPIO_ReadPin(ROTARY_CLK_GPIO_Port, ROTARY_CLK_Pin) == GPIO_PIN_SET;
+}
+bool read_rotary_b(void *data) {
+    return HAL_GPIO_ReadPin(ROTARY_DT_GPIO_Port, ROTARY_DT_Pin) == GPIO_PIN_SET;
+}
 /* USER CODE END 0 */
 
 /**
@@ -91,13 +106,69 @@ int main(void)
   MX_TIM5_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  Rotary_Init(&hrotary, read_rotary_a, NULL, read_rotary_b, NULL);
+  HAL_TIM_Base_Start_IT(&htim5);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if(key_press)
+    {
+        key_press=0;
+        HAL_Delay(10);
+        if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET) {      
+            rotary_mode = (rotary_mode+1) % ROTARY_MODE_COUNT;
+            printf("rotary_mode=%d\r\n",rotary_mode);
+            HAL_GPIO_DeInit(GPIOB, ROTARY_DT_Pin|ROTARY_CLK_Pin);
+            GPIO_InitTypeDef GPIO_InitStruct = {0};
+            if(rotary_mode == ROTARY_MODE_INTERRUPT)
+            {
+                GPIO_InitStruct.Pin = ROTARY_DT_Pin|ROTARY_CLK_Pin;
+                GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+                HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+                HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+                HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+                HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+            }
+            else
+            {
+                GPIO_InitStruct.Pin = ROTARY_DT_Pin|ROTARY_CLK_Pin;
+                GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+                HAL_NVIC_DisableIRQ(EXTI1_IRQn);
+                HAL_NVIC_DisableIRQ(EXTI2_IRQn);
+            }
+            while (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET) {HAL_Delay(1);}
+        }
+    }
+    if(rotary_key_press)
+    {
+        rotary_key_press=0;
+        HAL_Delay(10);
+        if (HAL_GPIO_ReadPin(ROTARY_SW_GPIO_Port, ROTARY_SW_Pin) == GPIO_PIN_RESET) {      
+            printf("rotary_count=%d\r\n",rotary_count);
+            while (HAL_GPIO_ReadPin(ROTARY_SW_GPIO_Port, ROTARY_SW_Pin) == GPIO_PIN_RESET) {HAL_Delay(1);}
+        }
+    }
+    if(rotary_mode == ROTARY_MODE_POLLING)
+    {
+        uint8_t result = Rotary_Process(&hrotary);
+        if (result == ROTARY_DIR_CW) 
+        {
+            rotary_count++;
+        }
+        else if (result == ROTARY_DIR_CCW)
+        {
+            rotary_count--;
+        }
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -152,7 +223,84 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if(GPIO_Pin == KEY_Pin)
+    {
+        static uint32_t key_last_tick = 0;
+        uint32_t now = HAL_GetTick();
+        if (now - key_last_tick < 50) {
+            return; //消抖50ms
+        }
+        key_last_tick = now;
+        key_press = 1;
+    }
 
+    if(GPIO_Pin == ROTARY_SW_Pin)
+    {
+        static uint32_t rotary_key_last_tick = 0;
+        uint32_t now = HAL_GetTick();
+        if (now - rotary_key_last_tick < 50) {
+            return; //消抖50ms
+        }
+        rotary_key_last_tick = now;
+        rotary_key_press = 1;
+    }
+    
+    if(rotary_mode == ROTARY_MODE_INTERRUPT)
+    {
+        if(GPIO_Pin == ROTARY_CLK_Pin || GPIO_Pin == ROTARY_DT_Pin) //外部中断触发
+        {
+            static uint32_t last_interrupt_time = 0;
+            uint32_t current_time = HAL_GetTick();
+            // 简单的软件防抖：忽略1ms内的重复中断
+            if (current_time - last_interrupt_time >= 1)
+            {
+                last_interrupt_time = current_time;
+                uint8_t result = Rotary_Process(&hrotary);
+                
+                if (result == ROTARY_DIR_CW)
+                {
+                    rotary_count++;
+                }
+                else if (result == ROTARY_DIR_CCW)
+                {
+                    rotary_count--;
+                }
+            }
+        }
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if(htim->Instance == TIM5) //1ms触发一次
+  {
+      static uint16_t led_counter = 0;
+      led_counter++;
+      if(led_counter >= 500)
+      {
+          led_counter = 0;
+          HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+      }
+
+      if(rotary_mode == ROTARY_MODE_TIMER)
+      {
+        // 调用编码器处理函数
+        uint8_t result = Rotary_Process(&hrotary);
+        // 根据返回值更新计数器
+        if (result == ROTARY_DIR_CW) 
+        {
+            rotary_count++;  // 顺时针，计数+1
+        }
+        else if (result == ROTARY_DIR_CCW)
+        {
+            rotary_count--;  // 逆时针，计数-1
+        }
+        // result == ROTARY_DIR_NONE时不做处理
+      }
+  }
+}
 /* USER CODE END 4 */
 
 /**

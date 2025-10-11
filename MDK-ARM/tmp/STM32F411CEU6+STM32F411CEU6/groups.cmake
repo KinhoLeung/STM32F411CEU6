@@ -41,6 +41,7 @@ add_library(Group_Application_User_Core OBJECT
   "${SOLUTION_ROOT}/../Core/Src/usart.c"
   "${SOLUTION_ROOT}/../Core/Src/stm32f4xx_it.c"
   "${SOLUTION_ROOT}/../Core/Src/stm32f4xx_hal_msp.c"
+  "${SOLUTION_ROOT}/../Core/Src/rotary.c"
 )
 target_include_directories(Group_Application_User_Core PUBLIC
   $<TARGET_PROPERTY:${CONTEXT},INTERFACE_INCLUDE_DIRECTORIES>

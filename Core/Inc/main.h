@@ -61,16 +61,16 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOC
 #define KEY_Pin GPIO_PIN_0
 #define KEY_GPIO_Port GPIOA
-#define ROTARY_A_IT_Pin GPIO_PIN_6
-#define ROTARY_A_IT_GPIO_Port GPIOA
-#define ROTARY_B_IT_Pin GPIO_PIN_7
-#define ROTARY_B_IT_GPIO_Port GPIOA
-#define ROTARY_A_Pin GPIO_PIN_1
-#define ROTARY_A_GPIO_Port GPIOB
-#define ROTARY_B_Pin GPIO_PIN_2
-#define ROTARY_B_GPIO_Port GPIOB
-#define ROTARY_KEY_Pin GPIO_PIN_10
-#define ROTARY_KEY_GPIO_Port GPIOB
+#define KEY_EXTI_IRQn EXTI0_IRQn
+#define ROTARY_DT_Pin GPIO_PIN_1
+#define ROTARY_DT_GPIO_Port GPIOB
+#define ROTARY_DT_EXTI_IRQn EXTI1_IRQn
+#define ROTARY_CLK_Pin GPIO_PIN_2
+#define ROTARY_CLK_GPIO_Port GPIOB
+#define ROTARY_CLK_EXTI_IRQn EXTI2_IRQn
+#define ROTARY_SW_Pin GPIO_PIN_10
+#define ROTARY_SW_GPIO_Port GPIOB
+#define ROTARY_SW_EXTI_IRQn EXTI15_10_IRQn
 
 /* USER CODE BEGIN Private defines */
 

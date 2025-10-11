@@ -79,6 +79,7 @@ project:
         - file: ../Core/Src/usart.c
         - file: ../Core/Src/stm32f4xx_it.c
         - file: ../Core/Src/stm32f4xx_hal_msp.c
+        - file: ../Core/Src/rotary.c
     - group: Drivers/STM32F4xx_HAL_Driver
       files:
         - file: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
