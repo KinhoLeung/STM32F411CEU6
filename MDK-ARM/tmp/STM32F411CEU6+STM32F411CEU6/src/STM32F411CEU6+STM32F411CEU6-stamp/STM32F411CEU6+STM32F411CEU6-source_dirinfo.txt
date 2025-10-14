@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=E:/Desktop/STM32F411CEU6/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6
+source_dir=E:/Desktop/STM32F411CEU6 - 副本/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6
 work_dir=
 

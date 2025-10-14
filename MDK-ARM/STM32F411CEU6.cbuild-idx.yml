@@ -12,7 +12,7 @@ build-idx:
       messages:
         info:
           - STM32F411CEU6.cbuild-pack.yml - file is already up-to-date
-          - STM32F411CEU6+STM32F411CEU6.cbuild-run.yml - file generated successfully
+          - STM32F411CEU6+STM32F411CEU6.cbuild-run.yml - file is already up-to-date
           - STM32F411CEU6+STM32F411CEU6.cbuild.yml - file is already up-to-date
       packs-unused:
         - pack: ARM::CMSIS-DSP@1.16.2

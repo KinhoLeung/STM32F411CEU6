@@ -23,7 +23,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = D:\vcpkg\artifacts\2139c4c6\tools.kitware.cmake\3.31.5\bin\cmake.exe --regenerate-during-build -SE:\Desktop\STM32F411CEU6\MDK-ARM\tmp -BE:\Desktop\STM32F411CEU6\MDK-ARM\tmp
+  command = D:\vcpkg\artifacts\2139c4c6\tools.kitware.cmake\3.31.5\bin\cmake.exe --regenerate-during-build -S"E:\Desktop\STM32F411CEU6 - 副本\MDK-ARM\tmp" -B"E:\Desktop\STM32F411CEU6 - 副本\MDK-ARM\tmp"
   description = Re-running CMake...
   generator = 1
 

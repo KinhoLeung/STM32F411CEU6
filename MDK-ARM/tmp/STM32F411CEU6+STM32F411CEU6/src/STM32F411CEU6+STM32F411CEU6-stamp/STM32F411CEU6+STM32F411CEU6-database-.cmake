@@ -1,11 +1,11 @@
 
 cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 
-set(command "D:/vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/cmake.exe;--build;E:/Desktop/STM32F411CEU6/MDK-ARM/tmp/1;--target;database")
+set(command "D:/vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.31.5/bin/cmake.exe;--build;E:/Desktop/STM32F411CEU6 - 副本/MDK-ARM/tmp/1;--target;database")
 set(log_merged "")
 set(log_output_on_failure "ON")
-set(stdout_log "E:/Desktop/STM32F411CEU6/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-out.log")
-set(stderr_log "E:/Desktop/STM32F411CEU6/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-err.log")
+set(stdout_log "E:/Desktop/STM32F411CEU6 - 副本/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-out.log")
+set(stderr_log "E:/Desktop/STM32F411CEU6 - 副本/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-err.log")
 execute_process(
   COMMAND ${command}
   RESULT_VARIABLE result
@@ -31,7 +31,7 @@ if(result)
   if (${log_merged})
     set(msg "${msg}\nSee also\n  ${stderr_log}")
   else()
-    set(msg "${msg}\nSee also\n  E:/Desktop/STM32F411CEU6/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-*.log")
+    set(msg "${msg}\nSee also\n  E:/Desktop/STM32F411CEU6 - 副本/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-*.log")
   endif()
   if (${log_output_on_failure})
     message(SEND_ERROR "${msg}")
@@ -50,7 +50,7 @@ if(result)
   endif()
 else()
   if(NOT "Ninja" MATCHES "Ninja")
-    set(msg "STM32F411CEU6+STM32F411CEU6 database command succeeded.  See also E:/Desktop/STM32F411CEU6/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-*.log")
+    set(msg "STM32F411CEU6+STM32F411CEU6 database command succeeded.  See also E:/Desktop/STM32F411CEU6 - 副本/MDK-ARM/tmp/STM32F411CEU6+STM32F411CEU6/src/STM32F411CEU6+STM32F411CEU6-stamp/STM32F411CEU6+STM32F411CEU6-database-*.log")
     message(STATUS "${msg}")
   endif()
 endif()
