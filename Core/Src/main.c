@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "SEGGER_RTT.h"
 #include "rotary.h"
 /* USER CODE END Includes */
 
@@ -108,6 +109,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  SEGGER_RTT_Init();
   Rotary_Init(&hrotary, read_rotary_a, NULL, read_rotary_b, NULL);
   HAL_TIM_Base_Start_IT(&htim5);
   /* USER CODE END 2 */
