@@ -25,7 +25,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "string.h"
+#include "SEGGER_RTT.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +47,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+extern volatile long long FreeRTOSRunTimeTicks;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -64,6 +66,23 @@ void StartDefaultTask(void *argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* Hook prototypes */
+void configureTimerForRunTimeStats(void);
+unsigned long getRunTimeCounterValue(void);
+
+/* USER CODE BEGIN 1 */
+/* Functions needed when configGENERATE_RUN_TIME_STATS is on */
+__weak void configureTimerForRunTimeStats(void)
+{
+  FreeRTOSRunTimeTicks = 0;
+}
+
+__weak unsigned long getRunTimeCounterValue(void)
+{
+return FreeRTOSRunTimeTicks;
+}
+/* USER CODE END 1 */
 
 /**
   * @brief  FreeRTOS initialization
@@ -117,9 +136,44 @@ void StartDefaultTask(void *argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
+  extern uint8_t key_press;
+  extern uint8_t rotary_key_press;
+  static char pcWriteBuffer[400];
+  static TickType_t lastPrintTick = 0;
   /* Infinite loop */
   for(;;)
   {
+    TickType_t nowTicks = xTaskGetTickCount();
+    if ((nowTicks - lastPrintTick) >= pdMS_TO_TICKS(1000))
+    {
+        lastPrintTick = nowTicks;
+        printf("---------------------------------------------\r\n");
+        memset(pcWriteBuffer, 0, 400);
+        printf("Task           State   Prio    Stack   Num\r\n");
+        vTaskList(pcWriteBuffer);   // Get memory info
+        printf("%s", pcWriteBuffer);
+        printf("---------------------------------------------\r\n");
+        memset(pcWriteBuffer, 0, 400);
+        printf("Task           Run Count       Usage\r\n");
+        vTaskGetRunTimeStats(pcWriteBuffer);   // Get CPU usage info
+        printf("%s", pcWriteBuffer);
+    }
+    if(key_press)
+    {
+      key_press=0;
+      osDelay(10);
+      if (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET) {      
+        while (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET) {osDelay(1);}
+      }
+    }
+    if(rotary_key_press)
+    {
+      rotary_key_press=0;
+      osDelay(10);
+      if (HAL_GPIO_ReadPin(ROTARY_SW_GPIO_Port, ROTARY_SW_Pin) == GPIO_PIN_RESET) {      
+        while (HAL_GPIO_ReadPin(ROTARY_SW_GPIO_Port, ROTARY_SW_Pin) == GPIO_PIN_RESET) {osDelay(1);}
+      }
+    }
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
