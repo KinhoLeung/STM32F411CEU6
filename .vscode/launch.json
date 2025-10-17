@@ -2,39 +2,35 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "JLink (launch)",
+            "name": "CMSIS_DAP@pyOCD (launch)",
             "type": "gdbtarget",
             "request": "launch",
-            "cwd": "${workspaceFolder}/",
+            "cwd": "${workspaceFolder}/MDK-ARM",
             "program": "out\\STM32F411CEU6\\STM32F411CEU6\\STM32F411CEU6.axf",
             "gdb": "arm-none-eabi-gdb",
             "preLaunchTask": "CMSIS Load",
             "initCommands": [
-                "monitor reset",
+                "monitor reset halt",
                 "tbreak main"
             ],
             "customResetCommands": [
-                "monitor reset",
+                "monitor reset halt",
                 "tbreak main",
                 "continue"
             ],
             "target": {
-                "server": "JLinkGDBServerCL.exe",
+                "server": "pyocd",
                 "serverParameters": [
-                    "-device",
-                    "STM32F411CEUx",
-                    "-endian",
-                    "little",
-                    "-if",
-                    "SWD",
-                    "-speed",
-                    "4000",
-                    "-noir",
-                    "-vd",
-                    "-nogui",
-                    "-localhostonly",
-                    "-port",
-                    "3333"
+                    "gdbserver",
+                    "--probe",
+                    "cmsisdap:",
+                    "--connect",
+                    "attach",
+                    "--cbuild-run",
+                    "${command:cmsis-csolution.getCbuildRunFile}",
+                    "--quiet",
+                    "--log",
+                    "*.cbuild_run,*server=info"
                 ],
                 "port": "3333"
             },
@@ -44,17 +40,17 @@
             }
         },
         {
-            "name": "JLink (attach)",
+            "name": "CMSIS_DAP@pyOCD (attach)",
             "type": "gdbtarget",
             "request": "attach",
-            "cwd": "${workspaceFolder}/",
+            "cwd": "${workspaceFolder}/MDK-ARM",
             "program": "out\\STM32F411CEU6\\STM32F411CEU6\\STM32F411CEU6.axf",
             "gdb": "arm-none-eabi-gdb",
             "initCommands": [
                 ""
             ],
             "customResetCommands": [
-                "monitor reset",
+                "monitor reset halt",
                 "tbreak main",
                 "continue"
             ],

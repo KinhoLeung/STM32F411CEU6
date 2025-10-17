@@ -4,99 +4,9 @@
         {
             "label": "CMSIS Erase",
             "type": "shell",
-            "command": [
-                "echo Connect > .cmd.jlink &&",
-                "echo Erase >> .cmd.jlink &&",
-                "echo Exit >> .cmd.jlink &&",
-                "JLink.exe -device STM32F411CEUx -if SWD -speed 4000 -commandfile .cmd.jlink"
-            ],
+            "command": "pyocd",
             "options": {
-                "cwd": "${workspaceFolder}/"
-            },
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "cmd.exe",
-                        "args": [
-                            "/d",
-                            "/c"
-                        ]
-                    }
-                }
-            },
-            "linux": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "osx": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "CMSIS Load",
-            "type": "shell",
-            "command": [
-                "echo Connect > .cmd.jlink &&",
-                "echo LoadFile \"out\\STM32F411CEU6\\STM32F411CEU6\\STM32F411CEU6.axf\" >> .cmd.jlink &&",
-                "echo Exit >> .cmd.jlink &&",
-                "JLink.exe -device STM32F411CEUx -if SWD -speed 4000 -commandfile .cmd.jlink"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}/"
-            },
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "cmd.exe",
-                        "args": [
-                            "/d",
-                            "/c"
-                        ]
-                    }
-                }
-            },
-            "linux": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "osx": {
-                "options": {
-                    "shell": {
-                        "executable": "/bin/bash",
-                        "args": [
-                            "-c"
-                        ]
-                    }
-                }
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "CMSIS Run",
-            "type": "shell",
-            "command": "JLinkGDBServerCL.exe",
-            "options": {
-                "cwd": "${workspaceFolder}/"
+                "cwd": "${workspaceFolder}/MDK-ARM"
             },
             "windows": {
                 "options": {
@@ -130,20 +40,113 @@
                 }
             },
             "args": [
-                "-device",
-                "STM32F411CEUx",
-                "-endian",
-                "little",
-                "-if",
-                "SWD",
-                "-speed",
-                "4000",
-                "-nohalt",
-                "-noir",
-                "-nogui",
-                "-localhostonly",
-                "-port",
-                "3333"
+                "erase",
+                "--probe",
+                "cmsisdap:",
+                "--chip",
+                "--cbuild-run",
+                "${command:cmsis-csolution.getCbuildRunFile}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "CMSIS Load",
+            "type": "shell",
+            "command": "pyocd",
+            "options": {
+                "cwd": "${workspaceFolder}/MDK-ARM"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "cmd.exe",
+                        "args": [
+                            "/d",
+                            "/c"
+                        ]
+                    }
+                }
+            },
+            "linux": {
+                "options": {
+                    "shell": {
+                        "executable": "/bin/bash",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "osx": {
+                "options": {
+                    "shell": {
+                        "executable": "/bin/bash",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "args": [
+                "load",
+                "--probe",
+                "cmsisdap:",
+                "--cbuild-run",
+                "${command:cmsis-csolution.getCbuildRunFile}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "CMSIS Run",
+            "type": "shell",
+            "command": "pyocd",
+            "options": {
+                "cwd": "${workspaceFolder}/MDK-ARM"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "cmd.exe",
+                        "args": [
+                            "/d",
+                            "/c"
+                        ]
+                    }
+                }
+            },
+            "linux": {
+                "options": {
+                    "shell": {
+                        "executable": "/bin/bash",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "osx": {
+                "options": {
+                    "shell": {
+                        "executable": "/bin/bash",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "args": [
+                "gdbserver",
+                "--probe",
+                "cmsisdap:",
+                "--connect",
+                "attach",
+                "--persist",
+                "--reset-run",
+                "--cbuild-run",
+                "${command:cmsis-csolution.getCbuildRunFile}",
+                "--quiet",
+                "--log",
+                "*.cbuild_run,*server=info"
             ],
             "problemMatcher": []
         },
@@ -154,6 +157,51 @@
                 "CMSIS Run"
             ],
             "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMSIS TargetInfo",
+            "type": "shell",
+            "command": "pyocd",
+            "options": {
+                "cwd": "${workspaceFolder}/MDK-ARM"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "cmd.exe",
+                        "args": [
+                            "/d",
+                            "/c"
+                        ]
+                    }
+                }
+            },
+            "linux": {
+                "options": {
+                    "shell": {
+                        "executable": "/bin/bash",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "osx": {
+                "options": {
+                    "shell": {
+                        "executable": "/bin/bash",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "args": [
+                "list",
+                "--cbuild-run",
+                "${command:cmsis-csolution.getCbuildRunFile}"
+            ],
             "problemMatcher": []
         }
     ]
