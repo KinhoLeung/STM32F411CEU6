@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "dma.h"
+#include "i2s.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
@@ -29,6 +31,7 @@
 #include <stdio.h>
 #include "SEGGER_RTT.h"
 #include "rotary.h"
+#include "usbd_audio_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,9 +104,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_TIM5_Init();
   MX_USART1_UART_Init();
   MX_TIM3_Init();
+  MX_I2S2_Init();
   /* USER CODE BEGIN 2 */
   SEGGER_RTT_Init();
   Rotary_Init(&hrotary, read_rotary_a, NULL, read_rotary_b, NULL);
@@ -201,6 +206,40 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
       rotary_key_last_tick = now;
       rotary_key_press = 1;
     }
+}
+
+void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+	if(hi2s == &hi2s2){
+		HalfTransfer_CallBack_FS();
+	}
+}
+ 
+void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+	if(hi2s == &hi2s2){
+		TransferComplete_CallBack_FS();
+	}
+}
+
+void AudioDMA_Stop(void)//停止DMA结束播放
+{
+	HAL_I2S_DMAStop(&hi2s2);
+}
+ 
+void AudioDMA_Pause(void)//暂停DMA暂停播放
+{
+	HAL_I2S_DMAPause(&hi2s2);
+}
+ 
+void AudioDMA_Resume(void)//从暂停恢复播放
+{
+	HAL_I2S_DMAResume(&hi2s2);
+}
+ 
+void AudioCard_Play(uint16_t* buff, uint16_t size)//声卡模式开始播放
+{
+	HAL_I2S_Transmit_DMA(&hi2s2, buff, size);
 }
 
 /* USER CODE END 4 */

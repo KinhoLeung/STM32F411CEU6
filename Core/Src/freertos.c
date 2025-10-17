@@ -147,16 +147,16 @@ void StartDefaultTask(void *argument)
     if ((nowTicks - lastPrintTick) >= pdMS_TO_TICKS(1000))
     {
         lastPrintTick = nowTicks;
-        printf("---------------------------------------------\r\n");
+        SEGGER_RTT_printf(0,"---------------------------------------------\r\n");
         memset(pcWriteBuffer, 0, 400);
-        printf("Task           State   Prio    Stack   Num\r\n");
+        SEGGER_RTT_printf(0,"Task           State   Prio    Stack   Num\r\n");
         vTaskList(pcWriteBuffer);   // Get memory info
-        printf("%s", pcWriteBuffer);
-        printf("---------------------------------------------\r\n");
+        SEGGER_RTT_printf(0,"%s", pcWriteBuffer);
+        SEGGER_RTT_printf(0,"---------------------------------------------\r\n");
         memset(pcWriteBuffer, 0, 400);
-        printf("Task           Run Count       Usage\r\n");
+        SEGGER_RTT_printf(0,"Task           Run Count       Usage\r\n");
         vTaskGetRunTimeStats(pcWriteBuffer);   // Get CPU usage info
-        printf("%s", pcWriteBuffer);
+        SEGGER_RTT_printf(0,"%s", pcWriteBuffer);
     }
     if(key_press)
     {

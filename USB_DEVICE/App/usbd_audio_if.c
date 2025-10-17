@@ -183,12 +183,15 @@ static int8_t AUDIO_DeInit_FS(uint32_t options)
 static int8_t AUDIO_AudioCmd_FS(uint8_t* pbuf, uint32_t size, uint8_t cmd)
 {
   /* USER CODE BEGIN 2 */
+  extern void AudioCard_Play(uint16_t* buff, uint16_t size);
   switch(cmd)
   {
     case AUDIO_CMD_START:
+    AudioCard_Play((uint16_t*)pbuf, size);
     break;
 
     case AUDIO_CMD_PLAY:
+    AudioCard_Play((uint16_t*)pbuf, size);
     break;
   }
   UNUSED(pbuf);
@@ -219,6 +222,16 @@ static int8_t AUDIO_VolumeCtl_FS(uint8_t vol)
 static int8_t AUDIO_MuteCtl_FS(uint8_t cmd)
 {
   /* USER CODE BEGIN 4 */
+  extern void AudioDMA_Pause(void);
+  extern void AudioDMA_Resume(void);
+  static uint8_t state=0;
+  if(state){
+	  AudioDMA_Pause();
+	  state = 0;
+  } else{
+	  AudioDMA_Resume();
+	  state = 1;
+  }
   UNUSED(cmd);
   return (USBD_OK);
   /* USER CODE END 4 */
