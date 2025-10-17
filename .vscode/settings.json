@@ -1,6 +1,0 @@
-{
-    "debug.hideSlowPreLaunchWarning": true,
-    "clangd.arguments": [
-        "--compile-commands-dir=e:\\Desktop\\STM32F411CEU6\\MDK-ARM\\out\\STM32F411CEU6\\STM32F411CEU6"
-    ]
-}
